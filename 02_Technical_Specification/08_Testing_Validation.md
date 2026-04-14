@@ -1,270 +1,237 @@
-# Testing and Validation
+# Testing and Validation — CoreShield Infrastructure
 
-## Purpose
-This section describes how the infrastructure is tested and validated in order to confirm that it is functional, integrated, secure, and consistent with the final project objectives.
+## 1. Validation Objective
 
-The purpose of testing and validation is to demonstrate that:
-- core services are operational
-- service dependencies work as expected
-- access control is enforced
-- security controls are meaningful
-- backup and monitoring logic are not only documented but also verified
-- Blue Team and Red Team deliverables are grounded in a real environment
+This document summarizes the testing and validation activities performed for the **CYBFS — CoreShield Infrastructure** project.
 
-This section supports the overall technical quality and credibility of the project.
+The goal of this phase was to confirm that the deployed environment was not only built successfully, but also **functionally operational, internally coherent, reachable, monitored, and supported by real technical evidence**.
 
-## Validation Strategy
-The validation approach used in this project is practical and SME-oriented.
+The validation process focused on practical checks rather than theoretical assumptions. Each critical role of the infrastructure was verified through commands, service checks, browser access, port inspection, or monitoring visibility.
 
-The goal is not to build a large automated quality assurance framework, but to verify the most important technical and security assumptions of the infrastructure through:
-- functional testing
-- integration testing
-- access control validation
-- backup and recovery validation
-- monitoring validation
-- security-oriented review
-- evidence collection
+---
 
-## Validation Objectives
-The infrastructure will be considered correctly validated if the following conditions are met:
-- each core service is operational
-- the web layer, database, file sharing, and identity components interact correctly
-- only authorized access paths are allowed
-- key security controls behave as intended
-- monitoring provides useful visibility
-- backup logic is documented and at least partially verified
-- findings and remediation logic can be supported by evidence
+## 2. Validation Scope
 
-## Scope of Validation
-The testing scope covers the core components required by the project:
-- identity and access management
-- web service
-- database
-- file-sharing service
-- backup logic
-- monitoring and logging
-- firewalling and exposure control
-- administrative access paths
+The testing phase covered the following areas:
 
-## 1. Functional Testing
+- virtual machine deployment consistency
+- host identity and addressing validation
+- service availability on each node
+- DNS and internal resolution checks
+- local web and application checks
+- collaborative service validation
+- Wazuh deployment and centralized monitoring validation
+- port listening and inter-node communication checks
+- evidence capture and appendix organization
 
-### Objective
-Functional testing verifies that each service is running and usable for its intended purpose.
+The final objective was to ensure that the platform could be presented as a **deployed, tested, monitored, and documented cyber-oriented infrastructure**.
 
-### Main Functional Tests
-The following functional checks should be performed:
+---
 
-#### Identity and Access Management
-- verify that users can be created and managed
-- verify that group-based access logic is usable
-- verify that authentication works for authorized users
+## 3. Final Validation Status
 
-#### Web Service
-- verify that the web server or application is reachable through the expected path
-- verify that the service responds correctly
-- verify that the web layer exposes only intended functionality
+The final validation status of the infrastructure is:
 
-#### Database
-- verify that the database service is running
-- verify that the application can connect to the database
-- verify that unauthorized direct access is not part of the normal workflow
+**Validated**
 
-#### File Sharing
-- verify that authorized users can access shared resources
-- verify that unauthorized users do not have the same access
-- verify that file operations work as expected within allowed permissions
+The following conditions were confirmed:
 
-#### Monitoring
-- verify that the monitoring solution is active
-- verify that relevant services or hosts appear in monitoring visibility
-- verify that useful events can be observed
+- all four VMs were deployed successfully
+- internal addressing was configured and validated
+- the identity and DNS node was operational
+- the application node was operational
+- the collaborative file-sharing node was operational
+- the centralized monitoring node was operational
+- Wazuh agents were active on all three main service nodes
+- access tests succeeded for the main exposed services
+- an evidence package was created and organized in `09_Appendices_Evidence`
 
-#### Backup
-- verify that backup procedures or outputs exist
-- verify that backup targets are identifiable
-- verify that the backup workflow is not only theoretical
+---
 
-## 2. Integration Testing
+## 4. Test Matrix
 
-### Objective
-Integration testing verifies that the components work together as a coherent infrastructure.
+| Test ID | Component | Validation Target | Expected Result | Result |
+|---|---|---|---|---|
+| T01 | VMware | All four VMs visible and operational | VMs deployed and available in VMware | Passed |
+| T02 | dc01 | Host identity and addressing | Hostname and IP configuration visible and coherent | Passed |
+| T03 | dc01 | DNS service exposure | Internal DNS reachable on port 53 | Passed |
+| T04 | dc01 | Internal name resolution | `app01`, `file01`, and `sec01` resolved internally | Passed |
+| T05 | app01 | Host identity and addressing | Hostname and IP configuration visible and coherent | Passed |
+| T06 | app01 | Web front-end service | Web service listening and active | Passed |
+| T07 | app01 | Local application response | HTTP response returned locally | Passed |
+| T08 | app01 | Wazuh agent | Agent installed, active, and connected | Passed |
+| T09 | file01 | Host identity and addressing | Hostname and IP configuration visible and coherent | Passed |
+| T10 | file01 | Web service stack | Apache2 / PHP-FPM / MariaDB active | Passed |
+| T11 | file01 | Nextcloud service state | Nextcloud installed and validated | Passed |
+| T12 | file01 | Wazuh agent | Agent installed, active, and connected | Passed |
+| T13 | sec01 | Host identity and addressing | Hostname and IP configuration visible and coherent | Passed |
+| T14 | sec01 | Wazuh manager | Service active | Passed |
+| T15 | sec01 | Wazuh indexer | Service active | Passed |
+| T16 | sec01 | Wazuh dashboard | Service active and reachable in browser | Passed |
+| T17 | sec01 | Monitoring coverage | `dc01`, `app01`, and `file01` visible as active agents | Passed |
+| T18 | app01 → sec01 | Agent communication on 1514 | Connection succeeds | Passed |
+| T19 | app01 → sec01 | Enrollment communication on 1515 | Connection succeeds | Passed |
+| T20 | file01 → sec01 | Agent communication on 1514 | Connection succeeds | Passed |
+| T21 | file01 → sec01 | Enrollment communication on 1515 | Connection succeeds | Passed |
+| T22 | User validation | Browser access to application | `app01` page accessible | Passed |
+| T23 | User validation | Browser access to Nextcloud | `file01` login page accessible | Passed |
+| T24 | User validation | Browser access to Wazuh | `sec01` dashboard accessible | Passed |
 
-### Main Integration Checks
-The following relationships should be validated:
+---
 
-- users authenticate through the centralized identity component
-- authorized users reach the web service through the intended access path
-- the web service communicates correctly with the database
-- shared file access follows the intended permission model
-- monitoring can observe at least the most critical services
-- backup logic covers the intended critical assets
+## 5. Node-by-Node Validation Summary
 
-### Expected Result
-The infrastructure must behave as a connected environment rather than as isolated technical components.
+### 5.1 dc01 — Identity and DNS Node
 
-## 3. Access Control Validation
+The `dc01` node was validated through:
+- hostname and addressing checks
+- route verification
+- Samba AD/DC service validation
+- DNS listening verification on port 53
+- successful internal name resolution
 
-### Objective
-This phase validates that access restrictions are correctly enforced.
+**Validation conclusion:**  
+`dc01` is operational as the identity and internal naming backbone of the environment.
 
-### Main Checks
-- verify that authorized users can access intended services
-- verify that unauthorized users are denied where appropriate
-- verify that privileged operations are limited to authorized accounts
-- verify that administrative paths are not broadly exposed
-- verify that internal services are not unnecessarily reachable
+---
 
-### Validation Logic
-This part is especially important because the project relies on centralized identity management, controlled remote access, and least-privilege logic.
+### 5.2 app01 — Application Node
 
-## 4. Network and Exposure Validation
+The `app01` node was validated through:
+- hostname and IP verification
+- Nginx service validation
+- local HTTP response check
+- browser access validation
+- Wazuh agent validation
+- communication validation to the monitoring server
 
-### Objective
-This phase validates that service exposure is limited and consistent with the architecture.
+**Validation conclusion:**  
+`app01` is operational as a monitored web application node.
 
-### Main Checks
-- verify that only required ports are open
-- verify that unnecessary services are not exposed
-- verify that internal services such as the database are protected behind controlled paths
-- verify that host firewall rules reflect the expected access model
-- verify that remote access follows the intended VPN or controlled access logic
+---
 
-### Expected Result
-The exposed attack surface must remain limited, documented, and justified.
+### 5.3 file01 — Collaboration Node
 
-## 5. Security Control Validation
+The `file01` node was validated through:
+- hostname and IP verification
+- Apache2 service validation
+- PHP-FPM validation
+- MariaDB validation
+- Nextcloud validation via `occ status`
+- browser access validation
+- Wazuh agent validation
+- communication validation to the monitoring server
 
-### Objective
-This phase verifies that the defined security controls are not only documented but actually reflected in the environment.
+**Validation conclusion:**  
+`file01` is operational as a monitored collaborative file-sharing node.
 
-### Main Checks
-- verify centralized identity and group logic
-- verify firewall restrictions
-- verify separation between privileged and standard access where applicable
-- verify logging or event visibility
-- verify configuration hardening decisions
-- verify that the environment reflects reduced service exposure
+---
 
-### Security Testing Position
-This validation phase does not replace the full Red Team assessment, but it confirms that baseline controls are present before or alongside deeper security review.
+### 5.4 sec01 — Monitoring Node
 
-## 6. Backup and Recovery Validation
+The `sec01` node was validated through:
+- hostname and IP verification
+- Wazuh manager status
+- Wazuh indexer status
+- Wazuh dashboard status
+- HTTPS local status check
+- browser login and dashboard access
+- agent visibility confirmation for the three monitored service nodes
 
-### Objective
-This phase verifies that backup logic is credible and usable.
+**Validation conclusion:**  
+`sec01` is operational as the centralized monitoring and detection node of the environment.
 
-### Main Checks
-- verify that backup files, snapshots, or documented outputs exist
-- verify that the backup scope matches critical assets
-- verify that backup storage is identifiable and controlled
-- verify at least one restore-oriented scenario, even if simplified
-- verify that recovery priorities are documented
+---
 
-### Expected Result
-The project must demonstrate not only that backups are planned, but that recovery has been considered in practical terms.
+## 6. Monitoring Validation
 
-## 7. Monitoring and Logging Validation
+Monitoring validation is a central part of the project because it demonstrates that the environment is not merely functional, but also observable.
 
-### Objective
-This phase confirms that the project includes usable operational and security visibility.
+The following points were confirmed:
 
-### Main Checks
-- verify visibility over critical hosts or services
-- verify that service failures or changes can be observed
-- verify that authentication or notable system events are visible where possible
-- verify that logs are retained or centralized in a usable way
+- Wazuh all-in-one deployment completed successfully on `sec01`
+- Wazuh dashboard accessible in browser
+- Wazuh agents installed on `dc01`, `app01`, and `file01`
+- all three agents visible as active in the dashboard
+- overview and endpoint monitoring captures collected in the evidence package
 
-### Expected Result
-The monitoring layer must provide enough visibility to support operations, troubleshooting, and Blue Team reasoning.
+**Validation conclusion:**  
+The infrastructure is centrally monitored and provides a real detection and visibility layer.
 
-## 8. Blue Team Validation Support
+---
 
-### Objective
-The deployed environment must generate enough evidence and visibility to support Blue Team analysis.
+## 7. Access Validation
 
-### Validation Elements
-- logs and monitoring are available for review
-- findings can be tied to observed evidence
-- risk evaluation is grounded in actual configuration or exposure
-- remediation actions can be linked to concrete weaknesses
-- retest logic is possible after correction
+The following access tests were completed successfully:
 
-### Value
-This ensures that the Blue Team deliverable is connected to a real infrastructure state.
+- application access on `app01`
+- Nextcloud login page access on `file01`
+- successful Nextcloud dashboard access validation
+- Wazuh login page access on `sec01`
+- Wazuh dashboard access after authentication
 
-## 9. Red Team Validation Support
+These checks confirm that the core business and security interfaces are accessible and usable.
 
-### Objective
-The deployed environment must be coherent enough to support a realistic Red Team or pentest-style assessment.
+---
 
-### Validation Elements
-- scope boundaries are clear
-- exposed services are identifiable
-- attack surface is understandable
-- findings can be supported by evidence
-- remediation and retest can be documented
+## 8. Port and Communication Validation
 
-### Value
-This ensures that the Red Team deliverable is based on the actual project environment rather than on generic assumptions.
+The project includes technical verification of listening services and communication paths.
 
-## 10. Evidence Collection
+Validated checks include:
 
-### Objective
-Testing and validation must be supported by documented evidence.
+- DNS listening on `dc01` port 53
+- web listening on `app01` port 80
+- web listening on `file01` port 80
+- Wazuh listening ports on `sec01`
+- successful communication from `app01` to `sec01` on 1514 and 1515
+- successful communication from `file01` to `sec01` on 1514 and 1515
 
-### Types of Evidence
-The following evidence types may be collected:
-- screenshots
-- command outputs
-- service status outputs
-- logs
-- configuration excerpts
-- access test results
-- backup outputs
-- monitoring views
+**Validation conclusion:**  
+Expected exposure and communication flows were confirmed.
 
-### Evidence Handling
-Evidence should be:
-- organized
-- named clearly
-- linked to the relevant component or test
-- reusable in Blue Team, Red Team, deployment documentation, and final presentation
+---
 
-## 11. Validation Matrix
+## 9. Evidence Package Validation
 
-| Validation Area | Main Objective | Example Expected Result |
-|-----------------|----------------|-------------------------|
-| IAM | confirm centralized access control | authorized users authenticate successfully |
-| Web Service | confirm service availability | web application reachable and functional |
-| Database | confirm protected backend integration | application connects successfully, DB not unnecessarily exposed |
-| File Sharing | confirm collaborative access control | authorized access works, unauthorized access restricted |
-| Firewall / Exposure | confirm reduced attack surface | only intended ports and paths are reachable |
-| Monitoring | confirm operational visibility | critical services visible in monitoring |
-| Backup | confirm recoverability logic | backup output exists and restore path is documented |
-| Blue Team Support | confirm defensive review readiness | evidence and findings can be linked |
-| Red Team Support | confirm assessment readiness | scope and attack surface are coherent and testable |
+All major validation steps were documented with screenshots and organized into the appendix structure:
 
-## 12. Known Validation Limits
-This project does not aim to provide:
-- a fully automated enterprise testing framework
-- exhaustive performance benchmarking
-- long-term resilience simulation
-- advanced large-scale chaos testing
-- full industrial acceptance testing
+- `02_Deployment_Screenshots`
+- `03_Service_Status_Outputs`
+- `04_Access_Control_Tests`
+- `05_Firewall_Port_Proofs`
+- `06_Monitoring_Backup_Proofs`
 
-These limits are acceptable because the project focuses on a realistic, demonstrable SME infrastructure within constrained time and scope.
+This evidence package supports the credibility of the project by linking validation claims to visible technical proof.
 
-## 13. Validation Outcome Criteria
-The infrastructure will be considered validated if:
-- all core components are operational or clearly evidenced
-- service integration is demonstrated
-- access restrictions behave as intended
-- security controls are visible and justifiable
-- backup and monitoring are credible
-- project documentation is aligned with observed reality
-- Blue Team and Red Team outputs remain coherent with the deployed environment
+---
 
-## Conclusion
-Testing and validation are essential to prove that the project is not only conceptually sound, but also operationally and defensively credible.
+## 10. Limitations of the Validation Phase
 
-By combining functional checks, integration validation, access control testing, backup and monitoring verification, and evidence collection, the project demonstrates that the proposed infrastructure is coherent, usable, and aligned with the final CYBFS requirements.
+The validation phase was designed for a compact final project scope and therefore has known limitations:
+
+- no automated test suite
+- no continuous integration validation pipeline
+- no formal load testing
+- no redundancy or failover testing
+- no enterprise-scale hardening audit
+- no advanced penetration scenario documented in this section
+
+These limitations are acceptable within the educational and demonstrative scope of the project.
+
+---
+
+## 11. Overall Conclusion
+
+The **CoreShield Infrastructure** reached a validated final state.
+
+The testing phase confirmed that the environment is:
+
+- deployed
+- reachable
+- operational
+- internally coherent
+- centrally monitored
+- documented with real evidence
+
+This makes the platform suitable for final presentation as a compact but credible cyber-oriented infrastructure project.
