@@ -1,75 +1,107 @@
-# FINAL_PROJECT_CYBFS
+# CYBFS — CoreShield
 
 ## Project Title
-Secure Infrastructure Design, Deployment, Defense and Assessment for a Remote-first Startup
+Secure Infrastructure Design, Deployment, Monitoring and Validation for a Distributed Collaboration Environment
 
 ## Project Overview
-This final project presents the design, deployment, security hardening, documentation, and assessment of a realistic SME infrastructure built for a remote-first startup.
+CYBFS — CoreShield is a final cybersecurity infrastructure project focused on building, securing, monitoring, and validating a realistic small-scale enterprise environment.
 
-The infrastructure is designed to support remote collaboration, secure access, centralized identity management, file sharing, application hosting, database services, backup, monitoring, and security operations.
+The project demonstrates how a structured infrastructure can support essential business services while keeping security, visibility, and operational validation at the center of the design.
 
-This repository consolidates all final deliverables required for the CYBFS final project, including:
-- project context and PRD
-- technical specification
-- infrastructure deployment documentation
-- project management materials
-- Blue Team documentation
-- Red Team documentation
-- technology watch report
-- final presentation
-- supporting evidence and appendices
+The environment was built around four dedicated virtual machines:
+- **dc01**: centralized identity, authentication, and DNS services
+- **app01**: application node hosting the operational web service stack
+- **file01**: secure file-sharing and collaboration node powered by Nextcloud
+- **sec01**: centralized security monitoring node powered by Wazuh
 
-## Company Profile
-Remote-first Startup
+This repository gathers the complete project documentation, deployment evidence, validation outputs, and presentation materials required for the CYBFS final submission.
+
+## Project Theme
+**CoreShield**
+
+CoreShield represents a minimal yet credible cyber-oriented infrastructure model designed to combine:
+- secure service delivery
+- centralized identity and name resolution
+- monitored collaboration services
+- evidence-based validation
+- defensive visibility through centralized monitoring
 
 ## Main Objectives
-- Design a realistic and secure SME infrastructure
-- Deploy and document core infrastructure services
-- Implement essential security controls
-- Produce Blue Team and Red Team deliverables
-- Demonstrate project management and delivery logic
-- Present the project clearly and professionally
+- Design a coherent and realistic multi-service infrastructure
+- Deploy core business and infrastructure services across dedicated virtual machines
+- Implement practical security controls and role separation
+- Centralize monitoring and endpoint visibility with Wazuh
+- Validate service accessibility, listening ports, and monitoring coverage
+- Produce structured technical documentation and evidence-backed deliverables
 
-## Minimum Technical Scope
-The project includes the following core components:
-- Web Server
-- Database
-- File Server / Drive
-- Active Directory / IAM
-- Backup and Monitoring
-- Security Controls
+## Final Infrastructure Scope
+The final deployed environment includes:
+- **Identity and DNS services** on `dc01`
+- **Web application stack** on `app01`
+- **Secure file-sharing platform (Nextcloud)** on `file01`
+- **Centralized monitoring and detection platform (Wazuh)** on `sec01`
+- **Wazuh agent coverage** on `dc01`, `app01`, and `file01`
+- **Deployment evidence and validation outputs** stored in `09_Appendices_Evidence/`
+
+## Core Architecture Summary
+| VM | Role | Main Services |
+|---|---|---|
+| `dc01` | Identity / DNS node | Samba AD DC, DNS |
+| `app01` | Application node | Nginx, Gunicorn, Flask, PostgreSQL |
+| `file01` | Collaboration node | Apache2, PHP-FPM, MariaDB, Nextcloud |
+| `sec01` | Security monitoring node | Wazuh manager, indexer, dashboard |
+
+## Security Logic
+The project follows a simple but strong security logic:
+- separate core roles across dedicated machines
+- avoid collapsing identity, application, collaboration, and monitoring into one host
+- monitor critical nodes from a centralized security platform
+- validate exposed services and internal communication paths
+- keep evidence for deployment, service state, access tests, and monitoring results
 
 ## Repository Structure
 - `00_README_GLOBAL.md` : global project overview
-- `01_Context_PRD/` : business context, needs analysis, PRD, MVP
-- `02_Technical_Specification/` : architecture, diagrams, security, risks, backup
-- `03_Infrastructure_Deployment/` : deployment proof and validation
-- `04_Project_Management/` : planning, Kanban, budget, roadmap
-- `05_Blue_Team/` : Blue Team methodology and filled case
-- `06_Red_Team/` : Red Team methodology and pentest deliverables
-- `07_Technology_Watch/` : short report in English
-- `08_Final_Presentation/` : presentation deck and oral notes
-- `09_Appendices_Evidence/` : screenshots, logs, proofs, annexes
+- `01_Context_PRD/` : context, needs analysis, PRD, MVP definition
+- `02_Technical_Specification/` : architecture, risks, controls, backup, testing
+- `03_Infrastructure_Deployment/` : deployment overview and implementation documentation
+- `04_Project_Management/` : planning, budget, roadmap, project tracking
+- `05_Blue_Team/` : Blue Team deliverables and defensive analysis
+- `06_Red_Team/` : Red Team deliverables and pentest-oriented outputs
+- `07_Technology_Watch/` : technology watch and research material
+- `08_Final_Presentation/` : presentation slides and speaking material
+- `09_Appendices_Evidence/` : screenshots, command outputs, validation proofs, monitoring evidence
+
+## Evidence and Validation
+The repository includes real validation material demonstrating that the infrastructure is not only documented, but effectively deployed and tested.
+
+Evidence includes:
+- VMware deployment screenshots
+- service status outputs from each VM
+- access validation for the web application, Nextcloud, and Wazuh
+- listening port proofs
+- centralized monitoring screenshots showing active agents
 
 ## Deliverables
-- Technical Specification Document
-- Infrastructure Deployment Documentation
-- Project Management File
-- Technology Watch Report
-- Short Pentest Report
-- Final Presentation
+- Global project documentation
+- Technical specification files
+- Infrastructure deployment documentation
+- Project management files
+- Blue Team and Red Team deliverables
+- Technology watch report
+- Final presentation materials
+- Evidence pack supporting deployment and validation claims
 
-## Project Logic
-This project follows a simple end-to-end logic:
-1. understand the business context
-2. define the infrastructure scope and constraints
-3. design the architecture
-4. deploy and validate core services
-5. secure the environment
-6. assess the infrastructure from Blue Team and Red Team perspectives
-7. document findings and remediations
-8. present the final project
+## Project Status
+**Infrastructure deployed and validated.**
 
-## Status
-Work in progress.
-This repository is being progressively completed and structured to produce a final, coherent, professional submission.
+Current status:
+- `dc01` operational and monitored
+- `app01` operational and monitored
+- `file01` operational and monitored
+- `sec01` operational with Wazuh dashboard and active endpoint visibility
+- evidence pack completed and organized
+
+## Conclusion
+CYBFS — CoreShield delivers a compact but serious cybersecurity infrastructure project based on real deployment work, real monitoring, and real validation outputs.
+
+The result is a coherent environment that combines infrastructure services, application hosting, collaboration capabilities, centralized monitoring, and professional documentation in a single final project repository.
