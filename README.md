@@ -1,10 +1,10 @@
-# CYBFS — CoreShield
+# CYBFS - CoreShield
 
 ## Project Title
 Secure Infrastructure Design, Deployment, Monitoring and Validation for a Distributed Collaboration Environment
 
 ## Project Overview
-CYBFS — CoreShield is a final cybersecurity infrastructure project focused on building, securing, monitoring, and validating a realistic small-scale enterprise environment.
+CYBFS - CoreShield is a final cybersecurity infrastructure project focused on building, securing, monitoring, and validating a realistic small-scale enterprise environment.
 
 The project demonstrates how a structured infrastructure can support essential business services while keeping security, visibility, and operational validation at the center of the design.
 
@@ -102,6 +102,6 @@ Current status:
 - evidence pack completed and organized
 
 ## Conclusion
-CYBFS — CoreShield delivers a compact but serious cybersecurity infrastructure project based on real deployment work, real monitoring, and real validation outputs.
+CYBFS - CoreShield delivers a compact but serious cybersecurity infrastructure project based on real deployment work, real monitoring, and real validation outputs.
 
 The result is a coherent environment that combines infrastructure services, application hosting, collaboration capabilities, centralized monitoring, and professional documentation in a single final project repository.
