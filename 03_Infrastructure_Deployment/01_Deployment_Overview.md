@@ -1,202 +1,230 @@
-# Deployment Overview
+# Deployment Overview — CoreShield Infrastructure
 
-## Purpose
-This document provides an operational overview of the infrastructure deployment for the final CYBFS project.
+## 1. Executive Summary
 
-Its purpose is to explain:
-- what is deployed
-- how the environment is organized
-- how the components interact
-- how the deployment supports business and security needs
-- how the infrastructure can be validated through evidence and testing
+This document describes the final deployment state of the **CYBFS — CoreShield Infrastructure** project.
 
-This section complements the technical specification by focusing on the actual deployment logic of the environment.
+The environment was designed as a compact but realistic cyber-oriented infrastructure composed of four virtual machines, each with a clearly separated role:
 
-## Deployment Context
-The project is built for a remote-first startup. The infrastructure must therefore support secure remote access, centralized identity management, access to business services, collaborative file usage, monitoring, backup, and baseline security controls.
+- **dc01**: identity, directory, and DNS services
+- **app01**: web application node
+- **file01**: collaborative file-sharing node
+- **sec01**: centralized security monitoring node
 
-The deployment is designed as a realistic SME-scale environment that remains:
-- functional
-- understandable
-- demonstrable
-- documented
-- security-oriented
+The final platform demonstrates a complete and operational environment with:
 
-## Deployment Objectives
-The main deployment objectives are:
-- deploy the minimum required infrastructure services
-- integrate these services into a coherent environment
-- control service exposure and access paths
-- support operational continuity through backup and monitoring
-- prepare the environment for Blue Team and Red Team assessment
-- collect technical proof for final documentation and presentation
+- centralized name resolution and domain services
+- a validated web application stack
+- a validated collaborative file-sharing service
+- centralized monitoring and detection through Wazuh
+- technical validation supported by real deployment evidence
 
-## Deployment Scope
-The deployment includes the following core components:
-- centralized identity and access management
-- web server or web application layer
-- backend database
-- file-sharing service
-- backup and monitoring capabilities
-- network and host security controls
+---
 
-These components correspond to the minimum technical requirements of the final project and must be deployed in an integrated way. :contentReference[oaicite:0]{index=0}
+## 2. Deployment Scope
 
-## Reference Deployment Model
-The deployment follows a hybrid or virtualized SME-style model.
+The deployment was completed on **VMware Workstation** and structured around a dual-network logic:
 
-The infrastructure is organized as a small-scale but structured environment in which services are separated according to their function and exposure level. This model is chosen because it remains realistic within project constraints while supporting proper service isolation, access control, and documentation.
+- a **NAT network** used for administration and SSH access from the host
+- a **host-only internal network** used for inter-VM communication inside the lab
 
-## Main Deployment Components
+This approach allowed the project to remain easy to manage while preserving a realistic internal infrastructure layout.
 
-### 1. Identity and Access Management
-A centralized identity service is deployed in order to manage:
-- users
-- groups
-- permissions
-- authentication logic
-- access control for services and shared resources
+---
 
-This component serves as the administrative foundation of the infrastructure.
+## 3. Final Infrastructure Inventory
 
-### 2. Web Service Layer
-A web-facing service is deployed as the main business application entry point.
+### 3.1 dc01 — Domain Controller and DNS Node
 
-Its role is to:
-- provide access to an application or internal web service
-- expose only the intended service path
-- connect to backend resources in a controlled way
+**Hostname:** `dc01.cybfs.lab`  
+**Internal IP:** `192.168.120.10`  
+**NAT IP:** `192.168.86.133`
 
-### 3. Database Layer
-A database service is deployed to support application data storage.
+**Role in the platform:**
+- domain and identity backbone
+- internal DNS resolution for the lab
+- central naming service for all nodes
 
-Its role is to:
-- store business or application data
-- communicate with the web layer
-- remain protected from unnecessary direct exposure
+**Validated functions:**
+- internal DNS service listening on port 53
+- successful name resolution for `app01`, `file01`, and `sec01`
+- operational Active Directory / Samba-based control plane
+- Wazuh agent installed and connected to `sec01`
 
-### 4. File-Sharing Layer
-A collaborative file-sharing service is deployed for remote users.
+---
 
-Its role is to:
-- centralize shared documents
-- support role-based or permission-based access
-- allow controlled remote collaboration
+### 3.2 app01 — Application Node
 
-### 5. Monitoring and Backup Layer
-Monitoring and backup logic are deployed to support:
-- operational visibility
-- event awareness
-- recovery readiness
-- resilience against data loss or service failure
+**Hostname:** `app01.cybfs.lab`  
+**Internal IP:** `192.168.120.20`  
+**NAT IP:** `192.168.86.134`
 
-### 6. Network and Host Security Layer
-Security controls are deployed across hosts and services through:
-- firewall rules
-- exposure limitation
-- controlled administrative access
-- hardening logic
-- logging and monitoring support
+**Role in the platform:**
+- application delivery node
+- demonstration of a secured and monitored web service
 
-## Deployment Logic
-The deployment follows a dependency-aware order.
+**Validated functions:**
+- Nginx running as web front-end
+- Gunicorn running as application server
+- Flask application operational
+- local PostgreSQL validated
+- web endpoint accessible from the lab
+- Wazuh agent installed and connected to `sec01`
 
-### Step 1 — Foundation Services
-The first phase focuses on foundational components such as:
-- host preparation
-- network preparation
-- identity and access management
-- baseline firewalling
-- core system configuration
+**Operational objective:**
+- provide a realistic production-like application node inside the infrastructure
 
-### Step 2 — Core Business Services
-The second phase focuses on:
-- deploying the web service
-- deploying the database
-- deploying the file-sharing service
-- validating connectivity and role separation
+---
 
-### Step 3 — Security and Visibility
-The third phase focuses on:
-- reinforcing service exposure control
-- enabling monitoring and log visibility
-- implementing backup logic
-- documenting security-related configuration
+### 3.3 file01 — Collaboration and File-Sharing Node
 
-### Step 4 — Validation and Evidence Collection
-The final phase focuses on:
-- service testing
+**Hostname:** `file01.cybfs.lab`  
+**Internal IP:** `192.168.120.30`  
+**NAT IP:** `192.168.86.135`
+
+**Role in the platform:**
+- collaborative storage and document-sharing service
+- practical business service inside the infrastructure
+
+**Validated functions:**
+- Apache2 running
+- PHP-FPM operational
+- MariaDB operational
+- Nextcloud installed, validated, and accessible
+- application status validated through `occ status`
+- Wazuh agent installed and connected to `sec01`
+
+**Operational objective:**
+- provide a realistic collaboration platform representative of internal business services
+
+---
+
+### 3.4 sec01 — Centralized Monitoring and Detection Node
+
+**Hostname:** `sec01.cybfs.lab`  
+**Internal IP:** `192.168.120.40`  
+**NAT IP:** `192.168.86.136`
+
+**Role in the platform:**
+- centralized security visibility
+- monitoring, collection, and detection
+- operational Blue Team support layer
+
+**Validated functions:**
+- Wazuh all-in-one deployment completed
+- Wazuh manager active
+- Wazuh indexer active
+- Wazuh dashboard active
+- HTTPS dashboard accessible
+- agents from `dc01`, `app01`, and `file01` visible and active
+
+**Operational objective:**
+- provide centralized evidence-based security monitoring for the entire environment
+
+---
+
+## 4. Logical Architecture
+
+The environment follows a simple and coherent service chain:
+
+- **dc01** provides naming and identity foundations
+- **app01** provides the web application service
+- **file01** provides collaborative file-sharing capabilities
+- **sec01** provides centralized monitoring across the infrastructure
+
+This creates a realistic cyber-lab topology where infrastructure, services, and security controls are linked together rather than deployed as isolated components.
+
+---
+
+## 5. Network Logic
+
+### 5.1 Internal Service Network
+The internal host-only network is used for:
+- DNS resolution
+- service-to-service communication
+- Wazuh agent-to-manager communication
+- internal validation traffic
+
+### 5.2 Administrative Network
+The NAT network is used for:
+- SSH administration from the host machine
+- deployment operations
+- maintenance access during build and validation phases
+
+This separation improves clarity and supports a cleaner infrastructure narrative.
+
+---
+
+## 6. Monitoring Coverage
+
+The final monitoring perimeter includes:
+
+- **dc01** monitored by Wazuh agent
+- **app01** monitored by Wazuh agent
+- **file01** monitored by Wazuh agent
+- **sec01** acting as centralized Wazuh server
+
+This results in a monitored infrastructure with operational visibility on the three main service nodes.
+
+---
+
+## 7. Validation Status
+
+The deployment reached a validated final state with the following results:
+
+- all four VMs deployed successfully
+- internal addressing finalized
+- core services validated on each node
+- application access validated
+- Nextcloud access validated
+- Wazuh dashboard access validated
+- three Wazuh agents visible and active
+- evidence package completed in `09_Appendices_Evidence`
+
+The environment is therefore considered **deployed, operational, monitored, and evidence-backed**.
+
+---
+
+## 8. Snapshots and Recovery State
+
+Stable snapshots were taken after successful deployment and validation phases in order to preserve rollback capability and demonstrate infrastructure maturity.
+
+Examples include validated states for:
+- `dc01`
+- `file01`
+- `sec01`
+
+This snapshot strategy supports reproducibility and safer final presentation work.
+
+---
+
+## 9. Evidence References
+
+Technical proof of deployment is available in:
+
+- `09_Appendices_Evidence/02_Deployment_Screenshots`
+- `09_Appendices_Evidence/03_Service_Status_Outputs`
+- `09_Appendices_Evidence/04_Access_Control_Tests`
+- `09_Appendices_Evidence/05_Firewall_Port_Proofs`
+- `09_Appendices_Evidence/06_Monitoring_Backup_Proofs`
+
+These appendices document:
+- VMware state
+- host identity and network information
+- service status
 - access validation
-- integration verification
-- screenshot and evidence collection
-- preparation of Blue Team and Red Team deliverables
+- listening ports
+- monitoring state and active agents
 
-## Deployment Assumptions
-The deployment assumes:
-- an SME-scale environment
-- limited but sufficient infrastructure resources
-- a manageable number of users and services
-- a realistic MVP rather than a full enterprise production platform
-- enough separation between components to justify security controls and trust boundaries
+---
 
-## Deployment Principles
-The infrastructure is deployed according to the following principles:
-- keep the environment simple enough to remain stable
-- deploy only what is necessary for the project scope
-- isolate critical services where relevant
-- reduce unnecessary exposure
-- centralize control where possible
-- document each major component
-- preserve proof of deployment and validation
+## 10. Conclusion
 
-## Expected Operational Flows
-The main flows supported by the deployment are:
-- user authentication through centralized identity management
-- remote user access to internal business resources
-- web application usage by authorized users
-- controlled communication between the web service and database
-- authenticated access to shared files
-- monitoring of critical services
-- backup and recovery operations for critical assets
+The **CoreShield Infrastructure** deployment successfully demonstrates a compact but realistic cyber-oriented environment combining:
 
-## Proof and Validation Positioning
-The deployment is not considered complete based only on installation.
+- identity and DNS services
+- application hosting
+- collaborative file-sharing
+- centralized monitoring and detection
 
-A valid deployment must also include:
-- configuration documentation
-- screenshots or command outputs
-- service validation
-- access control testing
-- monitoring visibility
-- backup evidence
-
-This is why the deployment folder is structured to include:
-- component descriptions
-- installation and configuration notes
-- screenshots and proofs
-- test cases
-- known limitations
-
-## Relationship with Other Project Deliverables
-This deployment overview supports and connects with:
-- the technical specification
-- the Blue Team case
-- the Red Team assessment
-- the project management file
-- the final presentation
-
-It acts as the operational bridge between architecture design and final evidence.
-
-## Success Criteria
-The deployment will be considered successful if:
-- the required services are deployed or clearly demonstrated
-- service integration is functional
-- access control is enforced
-- service exposure is limited and justified
-- monitoring and backup logic are present
-- evidence is sufficient to support review and presentation
-
-## Conclusion
-This deployment overview defines the practical implementation logic of the final CYBFS infrastructure.
-
-The environment is designed to remain realistic, secure, integrated, and demonstrable. It provides the operational basis for technical validation, security review, documentation, and final presentation.
+The project is not limited to theoretical design: the infrastructure was deployed, tested, monitored, and documented with real evidence.
