@@ -1,313 +1,249 @@
-# Security Controls
+# Security Controls — CoreShield Infrastructure
 
-## Purpose
-This section defines the main security controls implemented or planned for the infrastructure designed for the remote-first startup scenario.
+## 1. Security Objective
 
-The objective is to show how the project addresses the main operational and cybersecurity risks identified in the risk analysis while remaining realistic, understandable, and appropriate for an SME-scale environment.
+The security model of the **CYBFS — CoreShield Infrastructure** project is based on a simple principle: build a compact environment in which each virtual machine has a distinct role, while ensuring that the overall platform remains observable, controlled, and technically defensible.
 
-These controls are designed to support:
-- confidentiality of data and resources
-- integrity of services and configurations
-- availability of critical systems
-- secure administration
-- controlled remote access
-- improved detection and recovery readiness
+The implemented controls were selected to support a realistic final project scope without unnecessary complexity. The goal was not to simulate an enterprise-scale SOC, but to deploy a coherent infrastructure with real security visibility and validated service boundaries.
 
-## Security Strategy
-The project follows a practical defense-in-depth approach.
-
-The goal is not to implement a fully mature enterprise security architecture, but to combine several realistic and complementary controls that reduce the most relevant risks for the selected environment.
+---
 
-The strategy is based on the following principles:
-- least privilege
-- centralized identity control
-- reduced attack surface
-- controlled exposure of services
-- separation between user-facing and internal services
-- monitoring and traceability
-- recoverability through backup logic
-- documented remediation capability
+## 2. High-Level Security Approach
 
-## 1. Identity and Access Control
+The environment was designed around four complementary security ideas:
 
-### Centralized Identity Management
-A centralized directory service is used to manage:
-- user identities
-- groups
-- permissions
-- access to shared resources and services
+- **role separation**
+- **controlled service exposure**
+- **centralized monitoring**
+- **evidence-based validation**
 
-This reduces the risk of unmanaged accounts, inconsistent permissions, and privilege sprawl.
+Instead of concentrating every function on a single host, the project distributes responsibilities across dedicated nodes:
 
-### Group-Based Permissions
-Access to resources is assigned through groups and roles rather than through uncontrolled individual permissions wherever possible.
+- `dc01` for identity and naming
+- `app01` for application delivery
+- `file01` for collaborative services
+- `sec01` for monitoring and detection
 
-This improves:
-- consistency
-- maintainability
-- traceability
-- access review capability
+This separation reduces confusion, improves readability, and creates a stronger security narrative than a monolithic deployment.
 
-### Least Privilege
-Users and services must only receive the permissions necessary for their role.
+---
 
-This principle applies to:
-- standard user access
-- administrative access
-- shared resources
-- service-to-service interactions
-- database access where applicable
+## 3. Identity and Naming Control
 
-### Separation of Privileged and Standard Accounts
-Administrative tasks should not be performed from standard user accounts. Privileged access must be limited to dedicated administrative paths where possible.
+### 3.1 Centralized Domain Logic on `dc01`
 
-This reduces the impact of account misuse or credential compromise.
+The `dc01` node acts as the infrastructure backbone for identity and internal naming.  
+It provides:
 
-## 2. Remote Access Protection
+- domain-controller functionality
+- Samba-based directory services
+- internal DNS service on port 53
+- name resolution for the other infrastructure nodes
 
-### VPN-Based Remote Access
-Because the company is remote-first, remote connectivity is a major part of the architecture. Access to internal resources must therefore be protected through a VPN-based access path.
+This control improves operational consistency by ensuring that internal services can rely on stable hostnames instead of ad hoc addressing.
 
-This helps:
-- avoid unnecessary direct exposure of internal services
-- restrict remote access to authenticated users
-- create a clearer boundary between external and internal access
+### 3.2 Security Benefit
 
-### Restricted Administrative Access
-Administrative services must not be widely exposed. Remote administration should be limited to controlled paths, specific users, and justified access methods.
+Centralized naming and identity reduce operational ambiguity and support:
 
-### Authentication Visibility
-Authentication events and suspicious access attempts should be logged or made visible through monitoring mechanisms.
+- cleaner internal communication
+- easier service administration
+- more reliable infrastructure validation
+- stronger traceability of system roles
 
-This improves:
-- accountability
-- anomaly detection
-- response capability
+---
 
-## 3. Network Security Controls
+## 4. Service Separation and Exposure Control
 
-### Host Firewalling
-Each critical Linux host should use firewall rules to limit inbound traffic to required services only.
+### 4.1 Application Node Isolation (`app01`)
 
-Examples of authorized services may include:
-- VPN access
-- web access on expected ports
-- restricted internal communication between services
-- administration ports only when justified
+The application stack is isolated on `app01`.  
+Validated components include:
 
-All unnecessary inbound exposure must be denied by default.
-
-### Exposure Limitation
-Only services that need to be reachable should be exposed. Internal services such as the database or directory backend should remain behind controlled internal paths whenever possible.
-
-### Segmentation and Trust Boundaries
-The architecture follows a simplified trust-boundary model:
-- user access zone
-- exposed service zone
-- internal data zone
-- administration and monitoring zone
-
-Even in a small-scale project, this logic helps justify where services should be placed and how they should communicate.
-
-### Minimal Open Ports Policy
-The project applies a minimal exposure logic:
-- open only required ports
-- document each exposed service
-- remove or close unused services
-- review service exposure regularly
-
-## 4. Web Security Controls
-
-### Controlled Front-End Exposure
-The web server acts as the main user-facing service and must be configured to expose only the necessary access path.
-
-### Reverse Proxy Logic
-Where relevant, the web server can be used as a controlled front layer separating external access from backend services.
-
-### Service Hardening
-The web layer should be hardened through:
-- reduced unnecessary modules or features
-- controlled configuration
-- minimal exposure
-- restricted access to backend components
-
-### Logging
-Web access and error logs should be enabled and preserved for operational visibility and incident review.
-
-## 5. Database Security Controls
-
-### Restricted Database Exposure
-The database must not be directly exposed unless there is a clear technical reason to do so.
-
-It should be reachable only through:
-- the application path
-- restricted internal hosts
-- controlled administration paths where necessary
-
-### Access Restriction
-Database access should be limited through:
-- service-specific credentials where relevant
-- firewall restrictions
-- limited authorized source paths
-- role-based permissions inside the database when appropriate
-
-### Configuration Protection
-Database configuration and access methods must be documented and protected to reduce the risk of accidental exposure or weak defaults.
-
-### Data Integrity Support
-The database is part of the critical data layer and must be included in backup and recovery logic.
-
-## 6. File-Sharing Security Controls
-
-### Authenticated Access
-The file-sharing platform must require authenticated access and must not operate as an open or anonymous share.
-
-### Permission Management
-Access to shared folders, files, or collaboration spaces must be aligned with user roles and group permissions.
-
-### Data Exposure Reduction
-The sharing structure should avoid:
-- overly broad shared spaces
-- unnecessary public visibility
-- uncontrolled access inheritance
-
-### Visibility
-Where possible, file access, changes, or key events should be visible through logs or platform monitoring.
-
-## 7. Monitoring and Logging Controls
-
-### Monitoring Coverage
-The project includes monitoring or visibility over critical services such as:
-- host state
-- service availability
-- security-relevant events
-- authentication activity
-- system alerts where applicable
-
-### Log Collection
-Relevant logs should be collected or at least preserved for:
-- system administration
-- service troubleshooting
-- security review
-- Blue Team analysis
-
-### Detection Support
-The monitoring stack should help identify:
-- service failures
-- suspicious logins
-- notable host events
-- visibility gaps
-
-The goal is not full SOC maturity, but usable operational and defensive awareness.
-
-## 8. Backup and Recovery Controls
-
-### Backup Scope
-Critical assets covered by backup logic should include:
-- application data
-- shared files
-- selected configurations
-- important service states where relevant
-
-### Backup Protection
-Backup data must be treated as sensitive and protected against unauthorized access or accidental deletion.
-
-### Restore Validation
-A backup strategy is not sufficient unless restore capability is also considered. At least one restore-oriented test or validation path should be documented.
-
-### Operational Value
-These controls reduce the impact of:
-- accidental deletion
-- service corruption
-- configuration loss
-- partial infrastructure failure
-
-## 9. Hardening Controls
-
-### Baseline Hardening
-Each critical host should follow a basic hardening logic, including:
-- disabling unnecessary services
-- limiting open ports
-- using controlled administrative access
-- removing avoidable defaults
-- documenting important configuration choices
-
-### Configuration Review
-Security-related configuration must be reviewed to avoid:
-- weak defaults
-- overexposure
-- inconsistent access control
-- avoidable trust relationships
-
-### Documentation of Hardening Decisions
-Hardening measures should be documented so that they can be:
-- reviewed
-- justified
-- reproduced
-- tested during assessment
-
-## 10. Basic Intrusion Prevention / Defensive Readiness
-
-### Baseline Intrusion Prevention Logic
-The final project requires at least basic intrusion prevention.
-
-In this project, this requirement is addressed through a combination of:
-- firewall restrictions
-- exposure reduction
-- controlled remote access
-- host hardening
-- monitoring and log visibility
-- administrative access control
-
-### Optional Extended Detection
-If additional tooling is available, the project may also include:
-- host-based alerting
-- suspicious activity review
-- monitoring rules for notable events
-
-The goal remains realistic prevention and defensive readiness rather than advanced enterprise detection engineering.
-
-## 11. Administrative Security Controls
-
-### Restricted Privileged Access
-Administrative access must be limited to authorized personnel and justified technical paths only.
-
-### Traceability
-Administrative actions should be documented or logged where possible.
-
-### Change Awareness
-Configuration changes affecting security posture should be identified and tracked in project documentation.
-
-## 12. Mapping Controls to Main Risks
-
-| Main Risk | Main Control Response |
-|----------|------------------------|
-| Unauthorized remote access | VPN, centralized authentication, restricted admin access, logging |
-| Identity and privilege mismanagement | Samba AD, group-based permissions, least privilege |
-| Web service exposure | Nginx front layer, firewalling, hardening, limited public exposure |
-| Unauthorized database access | internal-only access paths, firewall rules, limited credentials |
-| File leakage | authenticated access, permission management, controlled sharing |
-| Service unavailability | monitoring, backup logic, restore readiness |
-| Backup failure | documented backup scope, restore validation, backup protection |
-| Insufficient monitoring | Wazuh or equivalent visibility, log collection, service monitoring |
-| Misconfiguration | baseline hardening, documented configuration review |
-| Admin compromise | privileged account separation, limited admin paths, traceability |
-
-## 13. Security Control Limits
-This project intentionally remains within SME-scale scope.
-
-It does not aim to implement:
-- full enterprise SOC maturity
-- large-scale zero-trust enforcement
-- advanced multi-region resilience
-- highly complex IDS/IPS engineering
-- full compliance framework implementation in depth
-
-Instead, it implements a coherent baseline security model that is realistic, documentable, and defensible for the final project.
-
-## Conclusion
-The security controls defined in this project are designed to directly address the main risks of a remote-first startup infrastructure.
-
-They combine identity control, secure remote access, exposure reduction, firewalling, hardening, monitoring, backup logic, and basic defensive readiness into a consistent security posture.
-
-This approach ensures that security is integrated into the architecture and not treated as a separate afterthought.
+- Nginx as front-end
+- Gunicorn as application backend
+- Flask as the application layer
+- local PostgreSQL support
+
+This separation ensures that the application logic is not mixed with monitoring or directory services.
+
+### 4.2 Collaboration Node Isolation (`file01`)
+
+The file-sharing and collaboration service is isolated on `file01`.  
+Validated components include:
+
+- Apache2
+- PHP-FPM
+- MariaDB
+- Nextcloud
+
+This design keeps collaborative services logically separated from the application node and from the monitoring node.
+
+### 4.3 Security Benefit
+
+By assigning different workloads to separate machines, the platform improves:
+
+- service clarity
+- troubleshooting simplicity
+- exposure control
+- monitoring readability
+
+It also makes compromise scenarios easier to reason about, because each host has a clearly defined operational purpose.
+
+---
+
+## 5. Network Segmentation Logic
+
+The project uses two network scopes:
+
+### 5.1 NAT Network
+Used for:
+- administration from the host
+- SSH access
+- deployment and maintenance operations
+
+### 5.2 Host-only Internal Network
+Used for:
+- internal service communication
+- DNS resolution
+- inter-node validation
+- Wazuh agent-to-manager communication
+
+### 5.3 Security Benefit
+
+This structure provides a basic but meaningful distinction between:
+
+- administrative access paths
+- internal infrastructure traffic
+
+Even in a compact lab, this separation improves control and makes the deployment more realistic than a flat single-network setup.
+
+---
+
+## 6. Monitoring and Detection Controls
+
+### 6.1 Central Monitoring Node (`sec01`)
+
+The `sec01` node hosts a Wazuh all-in-one deployment including:
+
+- Wazuh manager
+- Wazuh indexer
+- Wazuh dashboard
+
+This provides centralized monitoring, service visibility, and security event aggregation.
+
+### 6.2 Agent Coverage
+
+Wazuh agents were successfully deployed on:
+
+- `dc01`
+- `app01`
+- `file01`
+
+The agents are visible and active in the Wazuh dashboard, providing an operational monitoring perimeter across the three main service nodes.
+
+### 6.3 Security Benefit
+
+This control is one of the strongest elements of the project because it transforms the infrastructure from a set of functional VMs into a monitored environment with centralized visibility.
+
+It supports:
+- host visibility
+- service monitoring
+- event aggregation
+- alerting capability
+- evidence-backed validation
+
+---
+
+## 7. Access Validation as a Security Control
+
+Validated access checks were performed for:
+
+- the application hosted on `app01`
+- the Nextcloud platform on `file01`
+- the Wazuh dashboard on `sec01`
+
+These checks confirm that the expected services are reachable while preserving the intended architecture.
+
+### Security Benefit
+
+A deployed service is not automatically a validated service.  
+By explicitly confirming service accessibility and status, the project adds a practical control layer that reduces uncertainty and improves final deliverable credibility.
+
+---
+
+## 8. Port and Listening-Service Verification
+
+The project includes explicit verification of critical listening ports, including:
+
+- DNS on `dc01` (port 53)
+- web exposure on `app01`
+- web exposure on `file01`
+- Wazuh ports on `sec01`
+- agent communication from `app01` and `file01` to `sec01`
+
+### Security Benefit
+
+Port verification provides a simple but effective assurance that:
+- expected services are listening
+- unexpected listening states can be noticed
+- monitoring connectivity is technically demonstrated
+
+This strengthens the practical dimension of the security controls section.
+
+---
+
+## 9. Snapshot Strategy and Recovery Readiness
+
+Stable snapshots were taken after validated deployment phases for key nodes.
+
+This is not a replacement for enterprise backup strategy, but it remains a relevant operational safeguard for the scope of this project because it supports:
+
+- rollback capability
+- reproducibility
+- safer demonstration handling
+- controlled recovery points during finalization
+
+---
+
+## 10. Evidence-Backed Security Posture
+
+The security posture of the project is not presented as theoretical.  
+It is supported by real evidence available in `09_Appendices_Evidence`, including:
+
+- VMware deployment screenshots
+- service status outputs
+- access validation captures
+- listening-port proofs
+- Wazuh dashboard and agent monitoring screenshots
+
+This evidence-backed approach is important because it allows each declared security control to be tied to a visible technical proof.
+
+---
+
+## 11. Security Limitations
+
+The project remains a compact lab deployment and therefore has deliberate limitations:
+
+- no enterprise-grade redundancy
+- no full SIEM engineering beyond the Wazuh scope
+- no dedicated reverse proxy hardening beyond the implemented service stack
+- no advanced network segmentation appliance layer
+- no formal high-availability design
+
+These limitations are acceptable within the educational and demonstrative scope of the project. The focus was placed on coherence, technical correctness, visibility, and proof.
+
+---
+
+## 12. Conclusion
+
+The **CoreShield Infrastructure** implements a coherent set of practical security controls based on:
+
+- centralized identity and naming
+- role separation
+- controlled service deployment
+- internal network logic
+- centralized monitoring and agent coverage
+- explicit validation and technical evidence
+
+The result is a small but credible cyber-oriented infrastructure that goes beyond simple service deployment by demonstrating observability, structure, and defensible system organization.
