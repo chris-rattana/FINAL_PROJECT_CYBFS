@@ -60,7 +60,7 @@ The project follows a simple but strong security logic:
 - keep evidence for deployment, service state, access tests, and monitoring results
 
 ## Repository Structure
-- `README.md` : global project overview
+- `README.md`
 - `01_Context_PRD/` : context, needs analysis, PRD, MVP definition
 - `02_Technical_Specification/` : architecture, risks, controls, backup, testing
 - `03_Infrastructure_Deployment/` : deployment overview and implementation documentation
